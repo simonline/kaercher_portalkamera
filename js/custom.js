@@ -25,7 +25,10 @@ $(document).ready(function () {
         backend = container.kpcBackend();
         // Take snapshot
         if (container.data('snapshot')) {
-            backend.takeSnapshot();
+            backend.takeSnapshot(function (data) {
+                container.css('background-image', data.url);
+                container.css('background-size', data.size[0] + 'px ' + data.size[1] + 'px');
+            });
         }
         // Bind set warp on submit
         if (container.data('warp')) {

@@ -84,7 +84,7 @@
 
         return {
 
-            takeSnapshot: function () {
+            takeSnapshot: function (callback) {
                 $.ajax({
                     url: settings.base_url + settings.snapshot_url,
                     method: 'POST',
@@ -92,8 +92,7 @@
                     success: function (data, textStatus, jqXHR) {
                         // Set SVG background image
                         snapshot_image = data;
-                        that.css('background-image', data.url);
-                        that.css('background-size', 'contain');
+                        callback(data);
                     },
                     error: function (jqXHR, textStatus, errorThrown) {
                         createErrorModal();
