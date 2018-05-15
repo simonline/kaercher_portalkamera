@@ -1,38 +1,3 @@
-function draggablePolygon(polygon) {
-    var points = polygon.points;
-    var svgRoot = $(polygon).closest("svg");
-
-    function drag(i) { // close over variables for drag call back
-        var point = points.getItem(i);
-
-        var handle = document.createElement("div");
-        handle.className = "handle";
-        document.body.appendChild(handle);
-
-        var base = svgRoot.position();
-        // center handles over polygon
-        var cs = window.getComputedStyle(handle, null);
-        base.left -= (parseInt(cs.width) + parseInt(cs.borderLeftWidth) + parseInt(cs.borderRightWidth))/2;
-        base.top -= (parseInt(cs.height) + parseInt(cs.borderTopWidth) + parseInt(cs.borderBottomWidth))/2;
-
-        handle.style.left = base.left + point.x + "px";
-        handle.style.top = base.top + point.y + "px";
-
-        $(handle).draggable({
-            drag: function (event) {
-                setTimeout(function () { // jQuery apparently calls this *before* setting position, so defer
-                    point.x = parseInt(handle.style.left) - base.left;
-                    point.y = parseInt(handle.style.top) - base.top;
-                },0);
-            }
-        });
-    }
-
-    for (var i = 0; i < points.numberOfItems; i++) {
-        drag(i);
-    }
-}
-
 function initPanZoom(selector, options) {
     var $elem = $(selector);
     $elem.panzoom(options);
@@ -52,10 +17,60 @@ function initPanZoom(selector, options) {
 
 $(document).ready(function () {
 
+    var container = $('svg.kpc-backend'),
+        backend;
+
+    // Init backend
+    if (container.length) {
+        backend = container.kpcBackend();
+        // Take snapshot
+        if (container.data('snapshot')) {
+            backend.takeSnapshot();
+        }
+        // Bind set warp on submit
+        if (container.data('warp')) {
+            $('form').submit(function (e) {
+                e.preventDefault();
+                backend.setWarp(function (data, textStatus, jqXHR) {
+                    // Go to next step
+                    location = $('form').attr('action');
+                });
+            });
+        }
+        // Take warped snapshot
+        if (container.data('warped')) {
+            backend.takeWarpedSnapshot();
+        }
+        // Bind set config on submit
+        if (container.data('config')) {
+            $('form').submit(function (e) {
+                e.preventDefault();
+                backend.saveConfig(function (data, textStatus, jqXHR) {
+                    // Go to next step
+                    location = $('form').attr('action');
+                });
+            });
+        }
+        // Bind configuration links
+        $('a.save-config').click(function (e) {
+            e.preventDefault();
+            backend.saveConfig(function () {
+            });
+        });
+        $('a.load-config').click(function (e) {
+            e.preventDefault();
+            backend.loadConfig();
+        });
+        $('a.reset-config').click(function (e) {
+            e.preventDefault();
+            backend.resetConfig();
+        });
+    }
+
     // Step 1: Draggable polygon
     // Step 2: Draggable line
     $('.draggable').each(function () {
-        draggablePolygon(this);
+        jqueryDraggablePolygon(this);
     });
 
     // Step 2: Pan/Zoom video
@@ -81,7 +96,7 @@ $(document).ready(function () {
     // Step 2: Color picker for line
     if ($('#line.colorpicker').length) {
         $("#line-colorpicker").spectrum({
-            color: "green",
+            color: "#2b2b2b",
             showButtons: false,
             change: function(color) {
                 $('#line').css('stroke', color.toHexString());

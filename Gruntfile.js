@@ -60,6 +60,8 @@ module.exports = function(grunt) {
                         'node_modules/jquery-ui/ui/widgets/draggable.js',
                         'node_modules/spectrum-colorpicker/spectrum.js',
                         'node_modules/jquery.panzoom/dist/jquery.panzoom.js',
+                        'js/jquery.draggable-polygon.js',
+                        'js/jquery.kpc-backend.js',
                         'js/custom.js'
                     ]
                 },

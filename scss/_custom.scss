@@ -22,7 +22,8 @@
 h1, h2, h3, h4, h5, h6 {
   font-weight: bold;
 }
-a {
+a,
+input[type=submit] {
   font-weight: bold !important;
   text-transform: uppercase;
 }
@@ -31,16 +32,35 @@ a {
 }
 
 
-/* CUSTOM STYLES */
+/* HEADER */
 .navbar-brand small {
   font-size: 50%;
 }
+
+/* SVG */
+#svg {
+  border: 4px solid rgba(0, 0, 0, 1);
+  -webkit-transform-origin: 100px 100px;
+  transform-origin: 100px 100px 0;
+}
 .handle {
   position: absolute;
-  border: 0.1em solid black;
-  width: 1em;
-  height: 1em;
+  border: 4px solid $primary;
+  border-radius: 50%;
+  width: 2em;
+  height: 2em;
+  margin-left: 0.5em;
+  margin-top: 0.5em;
 }
+polygon {
+  fill: $primary;
+  opacity: 0.5;
+}
+polygon#line {
+  opacity: 1;
+}
+
+/* CONTROLS */
 .btn-cross {
   .btn-group-vertical:first-child .btn {
     border-top-right-radius: 0;
@@ -52,7 +72,6 @@ a {
   }
 }
 .sp-replacer {
-  border-radius: 0.25em;
   border: none;
   background-color: $primary;
   padding: 0.5em;
@@ -61,14 +80,7 @@ a {
   }
 }
 .sp-container {
-  border: 1px solid #2b2b2b;
-  border-radius: 0.4em;
   .sp-picker-container {
     background-color: $primary;
   }
-}
-#svg {
-  border: 4px solid rgba(0, 0, 0, 1);
-  -webkit-transform-origin: 100px 100px;
-  transform-origin: 100px 100px 0;
 }

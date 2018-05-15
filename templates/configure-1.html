@@ -4,41 +4,45 @@
   <body>
     @@include('includes/nav.html')
     <div class="container">
-      <div class="card">
-        <h3 class="card-header">Videobild-Entzerrung</h3>
-        <div class="card-body">
-          <div class="row">
-            <div class="col-sm-6">
-              <svg id="svg"
-                   xmlns:svg="http://www.w3.org/2000/svg"
-                   xmlns="http://www.w3.org/2000/svg"
-                   xmlns:xlink="http://www.w3.org/1999/xlink"
-                   xml:space="preserve"
-                   xmlns:xml="http://www.w3.org/XML/1998/namespace"
-                   version="1.1"
-                   baseProfile="basic"
-                   width="500"
-                   height="281">
-                <polygon id="video"
-                         class="draggable"
-                         points="100,50 400,50 400,200 100,200"
-                         fill="#007bff" />
-              </svg>
-            </div>
-            <div class="col-sm-6">
-              <p>
-                Ziehen Sie die Ecken der grünen Markierung auf die Ecken der
-                Schachbrett-Vorlage im Bild.
-              </p>
+      <form action="configure-2.html">
+        <div class="card">
+          <h3 class="card-header">Videobild-Entzerrung</h3>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-sm-5">
+                <svg id="svg"
+                     class="kpc-backend"
+                     data-snapshot="true"
+                     data-warp="true"
+                     xmlns:svg="http://www.w3.org/2000/svg"
+                     xmlns="http://www.w3.org/2000/svg"
+                     xmlns:xlink="http://www.w3.org/1999/xlink"
+                     xml:space="preserve"
+                     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+                     version="1.1"
+                     baseProfile="basic"
+                     width="400"
+                     height="711">
+                  <polygon id="video"
+                           class="draggable"
+                           points="50,50 350,50 350,640 50,640" />
+                </svg>
+              </div>
+              <div class="col-sm-7">
+                <p>
+                  Ziehen Sie die Ecken der grünen Markierung auf die Ecken der
+                  Schachbrett-Vorlage im Bild.
+                </p>
+              </div>
             </div>
           </div>
+          <div class="card-footer">
+            <input type="submit"
+                   class="btn btn-primary pull-right"
+                   value="Weiter zur Ausrichtung" />
+          </div>
         </div>
-        <div class="card-footer">
-          <a class="btn btn-primary pull-right" href="configure-2.html">
-            Weiter zur Ausrichtung
-          </a>
-        </div>
-      </div>
+      </form>
     </div>
     @@include('includes/footer.html')
   </body>
