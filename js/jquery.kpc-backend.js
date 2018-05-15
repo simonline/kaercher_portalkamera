@@ -5,7 +5,6 @@
             base_url: 'http://localhost',
             snapshot_url: '/snapshot/set',
             warp_url: '/morph/set',
-            warped_snapshot_url: '/snapshot/warped/set',
             config_save_url: '/config/set',
             config_load_url: '/config/load',
             config_reset_url: '/config/reset'
@@ -16,30 +15,7 @@
             console.error('No base URL given.');
             return this;
         }
-        var that = this.addClass('row'),
-            snapshot_image = {
-                url: '',
-                size: []
-            },
-            warp_data = {
-                corners: [] // [x0,y0,x1,y1,x2,y2,x3,y3]
-            },
-            warped_image = {
-                url: '',
-                size: []
-            },
-            camera_data = {
-                zoom: 0,
-                translation: [],
-                flip: false
-            },
-            signal_data = {
-                bounds: [] // [x0,y0,w,h]
-            },
-            guide_data = {
-                color: '', // hex
-                position: [] // [x0,y0,x1,y1]
-            };
+        var that = this.addClass('row');
 
         var createModal = function(id, title, text, callback) {
             $('#' + id).remove();
@@ -89,23 +65,19 @@
                     url: settings.base_url + settings.snapshot_url,
                     method: 'POST',
                     dataType: 'json',
-                    success: function (data, textStatus, jqXHR) {
-                        // Set SVG background image
-                        snapshot_image = data;
-                        callback(data);
-                    },
+                    success: callback,
                     error: function (jqXHR, textStatus, errorThrown) {
                         createErrorModal();
                     }
                 });
             },
 
-            setWarp: function (callback) {
+            setWarp: function (corners, callback) {
                 $.ajax({
                     url: settings.base_url + settings.warp_url,
                     method: 'POST',
                     dataType: 'json',
-                    data: JSON.stringify(warp_data.corners),
+                    data: JSON.stringify(corners),
                     success: callback,
                     error: function (jqXHR, textStatus, errorThrown) {
                         createErrorModal();
@@ -113,52 +85,24 @@
                 });
             },
 
-            takeWarpedSnapshot: function () {
-                $.ajax({
-                    url: settings.base_url + settings.warped_snapshot_url,
-                    method: 'GET',
-                    dataType: 'json',
-                    success: function (data, textStatus, jqXHR) {
-                        // Set SVG background image
-                        warped_image = data;
-                        that.css('background-image', data.url);
-                        that.css('background-size', 'contain');
-                    },
-                    error: function (jqXHR, textStatus, errorThrown) {
-                        createErrorModal();
-                    }
-                });
-            },
-
-            loadConfig: function () {
+            loadConfig: function (callback) {
                 $.ajax({
                     url: settings.base_url + settings.config_load_url,
                     method: 'GET',
                     dataType: 'json',
-                    success: function (data, textStatus, jqXHR) {
-                        // Update local config
-                        warp_data = data.warp;
-                        camera_data = data.camera;
-                        signal_data = data.signal;
-                        guide_data = data.guide;
-                    },
+                    success: callback,
                     error: function (jqXHR, textStatus, errorThrown) {
                         createErrorModal();
                     }
                 });
             },
 
-            saveConfig: function (callback) {
+            saveConfig: function (config, callback) {
                 $.ajax({
                     url: settings.base_url + settings.config_save_url,
                     method: 'POST',
                     dataType: 'json',
-                    data: JSON.stringify({
-                        warp: warp_data,
-                        camera: camera_data,
-                        signal: signal_data,
-                        guide: guide_data
-                    }),
+                    data: JSON.stringify(config),
                     success: callback,
                     error: function (jqXHR, textStatus, errorThrown) {
                         createErrorModal();
@@ -167,18 +111,12 @@
 
             },
 
-            resetConfig: function () {
+            resetConfig: function (callback) {
                 $.ajax({
                     url: settings.base_url + settings.config_reset_url,
                     method: 'GET',
                     dataType: 'json',
-                    success: function (data, textStatus, jqXHR) {
-                        // Update local configuration
-                        warp_data = data.warp;
-                        camera_data = data.camera;
-                        signal_data = data.signal;
-                        guide_data = data.guide;
-                    },
+                    success: callback,
                     error: function (jqXHR, textStatus, errorThrown) {
                         createErrorModal();
                     }

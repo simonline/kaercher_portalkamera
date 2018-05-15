@@ -68,6 +68,10 @@ module.exports = function(grunt) {
                 options: {
                     // sourceMap: 'js/app.min.js.map',
                     // sourceMappingURL: '/js/main.min.js.map'
+                    // FIXME: For testing, remove after
+                    compress: {
+                        drop_debugger: false
+                    }
                 }
             }
         },

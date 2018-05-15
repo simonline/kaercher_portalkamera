@@ -1,7 +1,8 @@
-function jqueryDraggablePolygon(polygon) {
+function jqueryDraggablePolygon(polygon, callback) {
     var points = polygon.points;
     var svgRoot = $(polygon).closest("svg");
 
+    $('.handle').remove();
     function drag(i) { // close over variables for drag call back
         var point = points.getItem(i);
 
@@ -23,6 +24,7 @@ function jqueryDraggablePolygon(polygon) {
                 setTimeout(function () { // jQuery apparently calls this *before* setting position, so defer
                     point.x = parseInt(handle.style.left) - base.left;
                     point.y = parseInt(handle.style.top) - base.top;
+                    callback(point);
                 },0);
             }
         });

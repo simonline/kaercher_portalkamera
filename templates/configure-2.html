@@ -23,24 +23,28 @@
                      baseProfile="basic"
                      x="0px"
                      y="0px"
-                     width="400"
-                     height="711">
-                  <polygon id="video"
-                           class="panzoom"
-                           points="100,50 300,100 400,200 100,200"
-                           fill="#007bff"/>
-                  <polygon id="line"
+                     width="408"
+                     height="719">
+                  <image xlink:href=""
+                         id="camera"
+                         class="panzoom"
+                         x="0"
+                         y="0"
+                         width="400px"
+                         height="711px"/>
+                  <polygon id="guide"
                            class="draggable colorpicker"
                            points="50,600 150,150"
                            stroke="#2b2b2b"
                            stroke-width="2"
                            fill="none"/>
                   <image xlink:href="img/traffic-light.png"
+                         id="signal"
                          class="pan"
                          x="275"
                          y="550"
-                         height="136px"
-                         width="101px"/>
+                         width="101px"
+                         height="136px"/>
                 </svg>
               </div>
               <div class="col-sm-7">
@@ -96,7 +100,7 @@
                 </div>
 
                 <h6 class="mt-5">Farbauswahl für Führungslinie</h6>
-                <input id="line-colorpicker" />
+                <input id="guide-colorpicker" />
 
               </div>
             </div>
