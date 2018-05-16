@@ -15,7 +15,7 @@
             console.error('No base URL given.');
             return this;
         }
-        var that = this.addClass('row');
+        var that = this;
 
         var createModal = function(id, title, text, callback) {
             $('#' + id).remove();
