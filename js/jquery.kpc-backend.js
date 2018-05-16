@@ -2,9 +2,9 @@
     $.fn.kpcBackend = function( options ) {
         var settings = $.extend({
             // These are the defaults.
-            base_url: 'http://localhost',
+            base_url: 'http://impulse-audio-lab-remote.DSCloud.biz:9080',
             snapshot_url: '/snapshot/set',
-            warp_url: '/morph/set',
+            warp_url: '/warp/set',
             config_save_url: '/config/set',
             config_load_url: '/config/load',
             config_reset_url: '/config/reset'
