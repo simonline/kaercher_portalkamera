@@ -165,8 +165,8 @@ $(document).ready(function () {
         if (container.data('snapshot')) {
             backend.takeSnapshot(function (data) {
                 snapshot_image = data;
-                container.css('background-image', 'url(' + 'http://10.0.0.36:9080/' + data.url +')'); // FIXME: base URL needed for testing
-                container.css('background-size', data.size[0] + 'px ' + data.size[1] + 'px');
+                container.css('background-image', 'url(' + 'http://impulse-audio-lab-remote.DSCloud.biz:9080/' + data.url +')'); // FIXME: base URL needed for testing
+                container.css('background-size', 'contain');
             });
         }
         // Bind set warp on submit
@@ -182,7 +182,7 @@ $(document).ready(function () {
             updateWarpData();
             backend.setWarp(warp_data.corners, function (data) {
                 warped_image = data;
-                container.find('image#camera').attr('xlink:href', data.url);
+                container.find('image#camera').attr('xlink:href', 'http://impulse-audio-lab-remote.DSCloud.biz:9080/' + data.url); // FIXME: base URL needed for testing
             });
         }
         // Bind set config on submit
