@@ -13,7 +13,7 @@ function jqueryDraggablePolygon(polygon, callback) {
         var base = svgRoot.position();
         // center handles over polygon
         var cs = window.getComputedStyle(handle, null);
-        base.left -= (parseInt(cs.width)*2 + parseInt(cs.borderLeftWidth) + parseInt(cs.borderRightWidth))/2;
+        base.left -= (parseInt(cs.width) + parseInt(cs.borderLeftWidth) + parseInt(cs.borderRightWidth))/2;
         base.top -= (parseInt(cs.height) + parseInt(cs.borderTopWidth) + parseInt(cs.borderBottomWidth))/2;
 
         handle.style.left = base.left + point.x + "px";
