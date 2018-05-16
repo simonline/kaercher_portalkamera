@@ -65,11 +65,13 @@ function updateCameraPolygonData() {
 }
 
 function updateCameraImageData() {
-    var matrix = $('image#camera').panzoom('getMatrix');
-    camera_data.zoom = $('.zoom-range').val();
+    var container = $('image#camera');
+    var matrix = container.panzoom('getMatrix');
+    var zoom = parseFloat(matrix[0]);
+    camera_data.zoom = zoom;
     camera_data.translation = [
-        Math.round(parseFloat(matrix[4]) * ratio),
-        Math.round(parseFloat(matrix[5]) * ratio)
+        Math.round((parseFloat(matrix[4]) + (zoom-1) * container.width()/2) * ratio),
+        Math.round((parseFloat(matrix[5]) + (zoom-1) * container.height()/2) * ratio)
     ];
 }
 
@@ -120,8 +122,8 @@ function refreshSVG() {
 
     // Step 2: Pan/Zoom camera
     if ($('#camera.panzoom').length) {
-        var camera_tx = camera_data.translation[0] * ratio_inverse,
-            camera_ty = camera_data.translation[1] * ratio_inverse;
+        var camera_tx = camera_data.translation[0],
+            camera_ty = camera_data.translation[1];
         $('#camera.panzoom').panzoom('pan', camera_tx, camera_ty);
         $('.zoom-range').val(camera_data.zoom);
     }
