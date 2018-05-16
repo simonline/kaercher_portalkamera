@@ -23,7 +23,8 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: bold;
 }
 a,
-input[type=submit] {
+input[type=submit],
+button {
   font-weight: bold !important;
   text-transform: uppercase;
 }
@@ -49,7 +50,7 @@ input[type=submit] {
   border-radius: 50%;
   width: 2em;
   height: 2em;
-  margin-left: 0.5em;
+  margin-left: 1.5em;
   margin-top: 0.5em;
 }
 polygon {
@@ -83,4 +84,12 @@ polygon#guide {
   .sp-picker-container {
     background-color: $primary;
   }
+}
+.btn span.inactive,
+.btn.active span.active {
+  display: block;
+}
+.btn.active span.inactive,
+.btn span.active {
+  display: none;
 }

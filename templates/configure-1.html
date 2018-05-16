@@ -4,41 +4,35 @@
   <body>
     @@include('includes/nav.html')
     <div class="container">
-      <form action="configure-2.html">
-        <div class="card">
-          <h3 class="card-header">Videobild-Entzerrung</h3>
-          <div class="card-body">
-            <div class="row">
-              <div class="col-sm-5">
-                <svg id="svg"
-                     class="kpc-backend"
-                     data-snapshot="true"
-                     data-warp="true"
-                     xmlns:svg="http://www.w3.org/2000/svg"
-                     xmlns="http://www.w3.org/2000/svg"
-                     xmlns:xlink="http://www.w3.org/1999/xlink"
-                     xml:space="preserve"
-                     xmlns:xml="http://www.w3.org/XML/1998/namespace"
-                     version="1.1"
-                     baseProfile="basic"
-                     width="408"
-                     height="719">
-                  <polygon id="camera"
-                           class="draggable"
-                           points="50,50 350,50 350,640 50,640" />
-                </svg>
-              </div>
-              <div class="col-sm-7">
-                <p>
-                  Ziehen Sie die Ecken der grünen Markierung auf die Ecken der
-                  Schachbrett-Vorlage im Bild.
-                </p>
-              </div>
-            </div>
+      <form id="config-1" action="configure-2.html">
+        <div class="row">
+          <div class="col-sm-4">
+            <svg id="svg"
+                 class="kpc-backend"
+                 data-snapshot="true"
+                 data-warp="true"
+                 xmlns:svg="http://www.w3.org/2000/svg"
+                 xmlns="http://www.w3.org/2000/svg"
+                 xmlns:xlink="http://www.w3.org/1999/xlink"
+                 xml:space="preserve"
+                 xmlns:xml="http://www.w3.org/XML/1998/namespace"
+                 version="1.1"
+                 baseProfile="basic"
+                 width="350"
+                 height="622">
+              <polygon id="camera"
+                       class="draggable"
+                       points="50,50 300,50 300,570 50,570"></polygon>
+            </svg>
           </div>
-          <div class="card-footer">
+          <div class="col-sm-8">
+            <h3>Videobild-Entzerrung</h3>
+            <p>
+              Ziehen Sie die Ecken der grünen Markierung auf die Ecken der
+              Schachbrett-Vorlage im Bild.
+            </p>
             <input type="submit"
-                   class="btn btn-primary pull-right"
+                   class="btn btn-primary"
                    value="Weiter zur Ausrichtung" />
           </div>
         </div>

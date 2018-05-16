@@ -1,21 +1,21 @@
 (function( $ ) {
-    $.fn.kpcBackend = function( options ) {
+    $.kpcBackend = function( options ) {
         var settings = $.extend({
             // These are the defaults.
             base_url: 'http://impulse-audio-lab-remote.DSCloud.biz:9080',
-            snapshot_url: '/snapshot/set',
+            maintenance_url: '/maintenance/set',
+            snapshot_url: '/snapshot/get',
             warp_url: '/warp/set',
             config_save_url: '/config/set',
             config_load_url: '/config/load',
             config_reset_url: '/config/reset'
-        }, this.data(), options);
+        }, options);
 
         // Validate settings
         if (!settings.base_url) {
             console.error('No base URL given.');
-            return this;
+            return;
         }
-        var that = this.addClass('row');
 
         var createModal = function(id, title, text, callback) {
             $('#' + id).remove();
@@ -60,10 +60,21 @@
 
         return {
 
+            setMaintenanceMode: function (callback) {
+                $.ajax({
+                    url: settings.base_url + settings.maintenance_url,
+                    method: 'POST',
+                    success: callback,
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        createErrorModal();
+                    }
+                });
+            },
+
             takeSnapshot: function (callback) {
                 $.ajax({
                     url: settings.base_url + settings.snapshot_url,
-                    method: 'POST',
+                    method: 'GET',
                     dataType: 'json',
                     success: callback,
                     error: function (jqXHR, textStatus, errorThrown) {
@@ -101,7 +112,6 @@
                 $.ajax({
                     url: settings.base_url + settings.config_save_url,
                     method: 'POST',
-                    dataType: 'json',
                     data: JSON.stringify(config),
                     success: callback,
                     error: function (jqXHR, textStatus, errorThrown) {

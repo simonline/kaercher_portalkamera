@@ -152,93 +152,107 @@ function refreshSVG() {
     }
 }
 
-$(document).ready(function () {
+function initAll() {
+    // ALL STEPS
+    // Bind configuration links
+    $('a.save-config').click(function (e) {
+        e.preventDefault();
+        backend.saveConfig({
+            warp: warp_data,
+            camera: camera_data,
+            signal: signal_data,
+            guide: guide_data
+        }, function () {});
+    });
+    $('a.load-config').click(function (e) {
+        e.preventDefault();
+        backend.loadConfig(function (data) {
+            warp_data = data.warp;
+            camera_data = data.camera;
+            signal_data = data.signal;
+            guide_data = data.guide;
+            refreshSVG();
+        });
+    });
+    $('a.reset-config').click(function (e) {
+        e.preventDefault();
+        backend.resetConfig(function (data) {
+            warp_data = data.warp;
+            camera_data = data.camera;
+            signal_data = data.signal;
+            guide_data = data.guide;
+            refreshSVG();
+        });
+    });
+}
 
-    container = $('svg.kpc-backend');
-    ratio = 1920.0 / container.height();
-    ratio_inverse = container.height() / 1920.0;
+function initStart() {
+    // STEP 0
+    // Bind maintenance mode and snapshot on submit
+    $('form#start').submit(function (e) {
+        e.preventDefault();
+        $('button[type=submit]').html('<i class="fa fa-spinner"></i> Laden ...');
+        backend.setMaintenanceMode(function (mdata) {
+            backend.takeSnapshot(function (sdata) {
+                // Go to next step, setting image parameter
+                location = $('form').attr('action') + '?snapshot=' + JSON.stringify(sdata.url);
+            });
+        });
+    });
+}
 
-    // Init backend
-    if (container.length) {
-        backend = container.kpcBackend();
-        // Take snapshot
-        if (container.data('snapshot')) {
-            backend.takeSnapshot(function (data) {
-                snapshot_image = data;
-                container.css('background-image', 'url(' + 'http://impulse-audio-lab-remote.DSCloud.biz:9080/' + data.url +')'); // FIXME: base URL needed for testing
-                container.css('background-size', 'contain');
-            });
-        }
-        // Bind set warp on submit
-        if (container.data('warp')) {
-            $('form').submit(function (e) {
-                e.preventDefault();
-                // Go to next step, setting warp parameter
-                location = $('form').attr('action') + '?warp=' + JSON.stringify(warp_data.corners);
-            });
-        }
-        // Step 2: Warp
-        if (container.data('warped')) {
-            updateWarpData();
-            backend.setWarp(warp_data.corners, function (data) {
-                warped_image = data;
-                container.find('image#camera').attr('xlink:href', 'http://impulse-audio-lab-remote.DSCloud.biz:9080/' + data.url); // FIXME: base URL needed for testing
-            });
-        }
-        // Bind set config on submit
-        if (container.data('config')) {
-            $('form').submit(function (e) {
-                e.preventDefault();
-                backend.saveConfig({
-                    warp: warp_data,
-                    camera: camera_data,
-                    signal: signal_data,
-                    guide: guide_data
-                }, function (data) {
-                    // Go to next step
-                    location = $('form').attr('action');
-                });
-            });
-        }
-        // Bind configuration links
-        $('a.save-config').click(function (e) {
+function initConfig1() {
+    // STEP 1
+    // Get snapshot URL from param
+    snapshot_image.url = JSON.parse(getParameterByName('snapshot'));
+    container.css('background-image', 'url(' +
+                                      'http://impulse-audio-lab-remote.DSCloud.biz:9080/' +
+                                      snapshot_image.url +')'); // FIXME: base URL needed for testing
+    container.css('background-size', 'contain');
+    // Draggable camera polygon
+    $('#camera.draggable').each(function () {
+        jqueryDraggablePolygon(this, updateCameraPolygonData);
+        updateCameraPolygonData();
+    });
+    // Bind set warp on submit
+    if (container.data('warp')) {
+        $('form').submit(function (e) {
+            e.preventDefault();
+            // Go to next step, setting warp parameter
+            location = $('form').attr('action') + '?warp=' + JSON.stringify(warp_data.corners);
+        });
+    }
+}
+
+function initConfig2() {
+    // STEP 2
+    // Get warped image
+    if (container.data('warped')) {
+        updateWarpData();
+        backend.setWarp(warp_data.corners, function (data) {
+            warped_image = data;
+            container.find('image#camera')
+                     .attr('xlink:href',
+                           'http://impulse-audio-lab-remote.DSCloud.biz:9080/' +
+                           data.url); // FIXME: base URL needed for testing
+        });
+    }
+    // Bind set config on submit
+    if (container.data('config')) {
+        $('form').submit(function (e) {
             e.preventDefault();
             backend.saveConfig({
                 warp: warp_data,
                 camera: camera_data,
                 signal: signal_data,
                 guide: guide_data
-            }, function () {});
-        });
-        $('a.load-config').click(function (e) {
-            e.preventDefault();
-            backend.loadConfig(function (data) {
-                warp_data = data.warp;
-                camera_data = data.camera;
-                signal_data = data.signal;
-                guide_data = data.guide;
-                refreshSVG();
-            });
-        });
-        $('a.reset-config').click(function (e) {
-            e.preventDefault();
-            backend.resetConfig(function (data) {
-                warp_data = data.warp;
-                camera_data = data.camera;
-                signal_data = data.signal;
-                guide_data = data.guide;
-                refreshSVG();
+            }, function (data) {
+                // Go to next step
+                location = $('form').attr('action');
             });
         });
     }
-
-    // Step 1: Draggable camera polygon
-    $('#camera.draggable').each(function () {
-        jqueryDraggablePolygon(this, updateCameraPolygonData);
-        updateCameraPolygonData();
-    });
-
-    // Step 2: Pan/Zoom camera
+    // Pan/Zoom camera
     if ($('#camera.panzoom').length) {
         initPanZoom('#camera.panzoom', '.panzoom', {
             eventNamespace: '.panzoom',
@@ -250,14 +264,12 @@ $(document).ready(function () {
         $('#camera.panzoom').on('panzoomend', updateCameraImageData);
         updateCameraImageData();
     }
-
-    // Step 2: Draggable guide polygon
+    // Draggable guide polygon
     $('#guide.draggable').each(function () {
         jqueryDraggablePolygon(this, updateGuideData);
         updateGuideData();
     });
-
-    // Step 2: Pan traffic light
+    // Pan traffic light
     if ($('#signal.pan').length) {
         initPanZoom('#signal.pan', '.pan', {
             eventNamespace: '.pan',
@@ -267,15 +279,53 @@ $(document).ready(function () {
         $('#signal.pan').on('panzoomend', updateSignalData);
         updateSignalData();
     }
-
-    // Step 2: Color picker for guide line
+    // Color picker for guide line
     if ($('#guide.colorpicker').length) {
         $("#guide-colorpicker").spectrum({
-            color: "#2b2b2b",
+            color: "#ffed00",
             showButtons: false,
+            preferredFormat: "hex",
+            move: updateGuideColorData,
             change: updateGuideColorData
         });
         updateGuideColorData();
+    }
+    // Flip snapshot
+    $('#camera-flip').change(function () {
+        camera_data.flip = $(this).is(':checked');
+        var camera = $('image#camera'),
+            matrix = camera.panzoom('getMatrix');
+        if ($(this).is(':checked')) {
+            matrix[0] = -1;
+            matrix[3] = -1;
+            camera.panzoom('setMatrix', matrix);
+            camera.panzoom('pan', camera.width(), camera.height());
+        } else {
+            matrix[0] = 1;
+            matrix[3] = 1;
+            camera.panzoom('setMatrix', matrix);
+            camera.panzoom('pan', 0, 0);
+        }
+    });
+}
+
+
+$(document).ready(function () {
+
+    container = $('svg.kpc-backend');
+    backend = $.kpcBackend();
+    ratio = 1920.0 / container.height();
+    ratio_inverse = container.height() / 1920.0;
+
+    initAll();
+    if ($('form#start').length) {
+        initStart();
+    }
+    if ($('form#config-1').length) {
+        initConfig1();
+    }
+    if ($('form#config-2').length) {
+        initConfig2();
     }
 
 });

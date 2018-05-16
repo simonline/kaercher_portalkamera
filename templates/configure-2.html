@@ -4,114 +4,119 @@
   <body>
     @@include('includes/nav.html')
     <div class="container">
-      <form action="done.html">
-        <div class="card">
-          <h3 class="card-header">Ausrichtung</h3>
-          <div class="card-body">
-            <div class="row">
-              <div class="col-sm-5">
-                <svg id="svg"
-                     class="kpc-backend panzoom-parent pan-parent"
-                     data-warped="true"
-                     data-config="true"
-                     xmlns:svg="http://www.w3.org/2000/svg"
-                     xmlns="http://www.w3.org/2000/svg"
-                     xmlns:xlink="http://www.w3.org/1999/xlink"
-                     xml:space="preserve"
-                     xmlns:xml="http://www.w3.org/XML/1998/namespace"
-                     version="1.1"
-                     baseProfile="basic"
-                     x="0px"
-                     y="0px"
-                     width="408"
-                     height="719">
-                  <image xlink:href=""
-                         id="camera"
-                         class="panzoom"
-                         x="0"
-                         y="0"
-                         width="400px"
-                         height="711px"/>
-                  <polygon id="guide"
-                           class="draggable colorpicker"
-                           points="50,600 150,150"
-                           stroke="#2b2b2b"
-                           stroke-width="10"
-                           fill="none"/>
-                  <image xlink:href="img/traffic-light.png"
-                         id="signal"
-                         class="pan"
-                         x="275"
-                         y="550"
-                         width="101px"
-                         height="136px"/>
-                </svg>
+      <form id="config-2" action="done.html">
+        <div class="row">
+          <div class="col-sm-4">
+            <svg id="svg"
+                 class="kpc-backend panzoom-parent pan-parent"
+                 data-warped="true"
+                 data-config="true"
+                 xmlns:svg="http://www.w3.org/2000/svg"
+                 xmlns="http://www.w3.org/2000/svg"
+                 xmlns:xlink="http://www.w3.org/1999/xlink"
+                 xml:space="preserve"
+                 xmlns:xml="http://www.w3.org/XML/1998/namespace"
+                 version="1.1"
+                 baseProfile="basic"
+                 x="0px"
+                 y="0px"
+                 width="358"
+                 height="630">
+              <image xlink:href=""
+                     id="camera"
+                     class="panzoom"
+                     x="0"
+                     y="0"
+                     width="350px"
+                     height="622px"></image>
+              <polygon id="guide"
+                       class="draggable colorpicker"
+                       points="50,600 150,150"
+                       stroke="#ffed00"
+                       stroke-width="10"
+                       fill="none"></polygon>
+              <image xlink:href="img/traffic-light.png"
+                     id="signal"
+                     class="pan"
+                     x="230"
+                     y="470"
+                     width="101px"
+                     height="136px"></image>
+            </svg>
+          </div>
+          <div class="col-sm-8">
+            <h3>Ausrichtung</h3>
+            <h6>Position und Zoom für Video</h6>
+            <div class="panzoom-control">
+              <div class="btn-group btn-cross">
+                <div class="btn-group-vertical">
+                  <a href="javascript:;"
+                     class="btn btn-primary pan-left"><i class="fa fa-arrow-left"></i></a>
+                </div>
+                <div class="btn-group-vertical">
+                  <a href="javascript:;"
+                     class="btn btn-primary pan-up"><i class="fa fa-arrow-up"></i></a>
+                  <a href="javascript:;"
+                     class="btn btn-primary reset">Reset</a>
+                  <a href="javascript:;"
+                     class="btn btn-primary pan-down"><i class="fa fa-arrow-down"></i></a>
+                </div>
+                <div class="btn-group-vertical">
+                    <a href="javascript:;"
+                       class="btn btn-primary pan-right"><i class="fa fa-arrow-right"></i></a>
+                </div>
               </div>
-              <div class="col-sm-7">
-                <h6>Position und Zoom für Video</h6>
-                <div class="panzoom-control">
-                  <div class="btn-group btn-cross">
-                    <div class="btn-group-vertical">
-                      <a href="javascript:;"
-                         class="btn btn-primary pan-left"><i class="fa fa-arrow-left"></i></a>
-                    </div>
-                    <div class="btn-group-vertical">
-                      <a href="javascript:;"
-                         class="btn btn-primary pan-up"><i class="fa fa-arrow-up"></i></a>
-                      <a href="javascript:;"
-                         class="btn btn-primary reset">Reset</a>
-                      <a href="javascript:;"
-                         class="btn btn-primary pan-down"><i class="fa fa-arrow-down"></i></a>
-                    </div>
-                    <div class="btn-group-vertical">
-                        <a href="javascript:;"
-                           class="btn btn-primary pan-right"><i class="fa fa-arrow-right"></i></a>
-                    </div>
-                  </div>
-                  <div class="btn-group-vertical ml-3">
-                    <a href="javascript:;"
-                       class="btn btn-primary zoom-in"><i class="fa fa-plus"></i></a>
-                    <a href="javascript:;"
-                       class="btn btn-primary zoom-out"><i class="fa fa-minus"></i></a>
-                  </div>
-                  <input type="range" class="zoom-range" step="0.05" min="0.3" max="6">
+              <div class="btn-group-vertical ml-3">
+                <a href="javascript:;"
+                   class="btn btn-primary zoom-in"><i class="fa fa-plus"></i></a>
+                <a href="javascript:;"
+                   class="btn btn-primary zoom-out"><i class="fa fa-minus"></i></a>
+              </div>
+              <input type="range" class="zoom-range" step="0.05" min="0.3" max="6">
+            </div>
+
+            <h6 class="mt-4">Position für Ampel</h6>
+            <div class="pan-control">
+              <div class="btn-group btn-cross">
+                <div class="btn-group-vertical">
+                  <a href="javascript:;"
+                     class="btn btn-primary pan-left"><i class="fa fa-arrow-left"></i></a>
                 </div>
-
-                <h6 class="mt-5">Position für Ampel</h6>
-                <div class="pan-control">
-                  <div class="btn-group btn-cross">
-                    <div class="btn-group-vertical">
-                      <a href="javascript:;"
-                         class="btn btn-primary pan-left"><i class="fa fa-arrow-left"></i></a>
-                    </div>
-                    <div class="btn-group-vertical">
-                      <a href="javascript:;"
-                         class="btn btn-primary pan-up"><i class="fa fa-arrow-up"></i></a>
-                      <a href="javascript:;"
-                         class="btn btn-primary reset">Reset</a>
-                      <a href="javascript:;"
-                         class="btn btn-primary pan-down"><i class="fa fa-arrow-down"></i></a>
-                    </div>
-                    <div class="btn-group-vertical">
-                        <a href="javascript:;"
-                           class="btn btn-primary pan-right"><i class="fa fa-arrow-right"></i></a>
-                    </div>
-                  </div>
+                <div class="btn-group-vertical">
+                  <a href="javascript:;"
+                     class="btn btn-primary pan-up"><i class="fa fa-arrow-up"></i></a>
+                  <a href="javascript:;"
+                     class="btn btn-primary reset">Reset</a>
+                  <a href="javascript:;"
+                     class="btn btn-primary pan-down"><i class="fa fa-arrow-down"></i></a>
                 </div>
-
-                <h6 class="mt-5">Farbauswahl für Führungslinie</h6>
-                <input id="guide-colorpicker" />
-
+                <div class="btn-group-vertical">
+                    <a href="javascript:;"
+                       class="btn btn-primary pan-right"><i class="fa fa-arrow-right"></i></a>
+                </div>
               </div>
             </div>
-          </div>
-          <div class="card-footer">
-            <a class="btn btn-primary" href="configure-1.html">
-              Zurück zur Videobild-Entzerrung
-            </a>
+
+            <h6 class="mt-4">Farbauswahl für Führungslinie</h6>
+            <p>
+              <input id="guide-colorpicker" />
+            </p>
+
+            <h6 class="mt-4">Bild spiegeln</h6>
+            <div class="btn-group-toggle" data-toggle="buttons">
+              <label class="btn btn-primary">
+                <input id="camera-flip" type="checkbox" autocomplete="off">
+                <span class="active">Ein</span>
+                <span class="inactive">Aus</span>
+              </label>
+            </div>
+            <br>
+
             <input type="submit"
-                   class="btn btn-primary pull-right"
+                   class="btn btn-primary"
                    value="Fertig" />
+          </div>
+
           </div>
         </div>
       </form>
