@@ -163,7 +163,7 @@ $(document).ready(function () {
         if (container.data('snapshot')) {
             backend.takeSnapshot(function (data) {
                 snapshot_image = data;
-                container.css('background-image', data.url);
+                container.css('background-image', 'url(' + 'http://10.0.0.36:9080/' + data.url +')'); // FIXME: base URL needed for testing
                 container.css('background-size', data.size[0] + 'px ' + data.size[1] + 'px');
             });
         }
