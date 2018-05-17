@@ -71,7 +71,7 @@ function updateCameraImageData() {
     camera_data.zoom = zoom;
     camera_data.translation = [
         Math.round((parseFloat(matrix[4]) + (zoom-1) * container.width()/2) * ratio),
-        Math.round((parseFloat(matrix[5]) + (zoom-1) * container.height()/2) * ratio)
+        Math.round((parseFloat(matrix[5]) - (parseFloat(matrix[3]) < 0 ? container.height() * zoom : 0) + (zoom-1) * container.height()/2) * ratio)
     ];
 }
 
@@ -296,7 +296,7 @@ function initConfig2() {
         var camera = $('image#camera'),
             matrix = camera.panzoom('getMatrix');
         if ($(this).is(':checked')) {
-            matrix[0] = -1;
+            matrix[0] = 1;
             matrix[3] = -1;
             camera.panzoom('setMatrix', matrix);
             camera.panzoom('pan', camera.width(), camera.height());
