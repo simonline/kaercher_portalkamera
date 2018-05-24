@@ -205,10 +205,8 @@ function initConfig1() {
     // STEP 1
     // Get snapshot URL from param
     snapshot_image.url = JSON.parse(getParameterByName('snapshot'));
-    container.css('background-image', 'url(' +
-                                      'http://impulse-audio-lab-remote.DSCloud.biz:9080/' +
-                                      snapshot_image.url +')'); // FIXME: base URL needed for testing
-    container.css('background-size', 'contain');
+    container.css('background-image', 'url(' + snapshot_image.url +')');
+    container.css('background-size', '342px 614px');
     // Draggable camera polygon
     $('#camera.draggable').each(function () {
         jqueryDraggablePolygon(this, updateCameraPolygonData);
@@ -232,9 +230,7 @@ function initConfig2() {
         backend.setWarp(warp_data.corners, function (data) {
             warped_image = data;
             container.find('image#camera')
-                     .attr('xlink:href',
-                           'http://impulse-audio-lab-remote.DSCloud.biz:9080/' +
-                           data.url); // FIXME: base URL needed for testing
+                     .attr('xlink:href', data.url); 
         });
     }
     // Bind set config on submit
@@ -298,6 +294,7 @@ function initConfig2() {
         if ($(this).is(':checked')) {
             matrix[0] = 1;
             matrix[3] = -1;
+            matrix[4] = 0;
             camera.panzoom('setMatrix', matrix);
             camera.panzoom('pan', camera.width(), camera.height());
         } else {
