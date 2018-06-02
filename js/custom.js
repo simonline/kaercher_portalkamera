@@ -152,37 +152,28 @@ function refreshSVG() {
     }
 }
 
+function downloadURI(uri, name) {
+    var link = document.createElement("a");
+    link.download = name;
+    link.href = uri;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+
 function initAll() {
     // ALL STEPS
-    // Bind configuration links
+    // Bind download config
     $('a.save-config').click(function (e) {
         e.preventDefault();
-        backend.saveConfig({
-            warp: warp_data,
-            camera: camera_data,
-            signal: signal_data,
-            guide: guide_data
-        }, function () {});
-    });
-    $('a.load-config').click(function (e) {
-        e.preventDefault();
-        backend.loadConfig(function (data) {
-            warp_data = data.warp;
-            camera_data = data.camera;
-            signal_data = data.signal;
-            guide_data = data.guide;
-            refreshSVG();
+        backend.getConfig(function (data) {
+            downloadURI('data:application/json,' + JSON.stringify(data), 'config.json');
         });
     });
+    // Bind reset
     $('a.reset-config').click(function (e) {
         e.preventDefault();
-        backend.resetConfig(function (data) {
-            warp_data = data.warp;
-            camera_data = data.camera;
-            signal_data = data.signal;
-            guide_data = data.guide;
-            refreshSVG();
-        });
+        backend.resetConfig();
     });
 }
 
@@ -191,7 +182,7 @@ function initStart() {
     // Bind maintenance mode and snapshot on submit
     $('form#start').submit(function (e) {
         e.preventDefault();
-        $('button[type=submit]').html('<i class="fa fa-spinner"></i> Laden ...');
+        loadingButton($('button[type=submit]'));
         backend.setMaintenanceMode(function (mdata) {
             backend.takeSnapshot(function (sdata) {
                 // Go to next step, setting image parameter
@@ -199,18 +190,71 @@ function initStart() {
             });
         });
     });
+    // Bind upload software update
+    $('a.update-software').click(function (e) {
+        e.preventDefault();
+        $('#upload-update').trigger('click');
+    });
+    $('#upload-update').change(function (e) {
+        var file = this.files[0];
+        if (file) {
+            showLoadingModal('Update wird übertragen, bitte warten.');
+            backend.beginUpdate(function () {
+                backend.sendUpdateFile(file, function () {
+                    backend.verifyUpdate(function () {
+                        showLoadingModal('Update erfolgreich.', 'Ok');
+                    });
+                });
+            });
+        }
+    });
+
+    // Bind upload config
+    $('a.load-config').click(function (e) {
+        e.preventDefault();
+        $('#upload-config').trigger('click');
+    });
+    $('#upload-config').change(function (e) {
+        var file = this.files[0];
+        if (file) {
+            loadingButton($('a.load-config'));
+            var reader = new FileReader();
+            reader.readAsText(file, "UTF-8");
+            reader.onload = function (re) {
+                var config = JSON.parse(re.target.result);
+                backend.setConfig(config, function (data) {
+                    // Go to next step
+                    location = $('form').attr('action');
+                });
+            };
+            reader.onerror = function (ee) {
+                backend.error();
+            };
+        }
+    });
 }
 
 function initConfig1() {
     // STEP 1
-    // Get snapshot URL from param
-    snapshot_image.url = JSON.parse(getParameterByName('snapshot'));
-    container.css('background-image', 'url(' + snapshot_image.url +')');
-    container.css('background-size', '342px 614px');
-    // Draggable camera polygon
-    $('#camera.draggable').each(function () {
-        jqueryDraggablePolygon(this, updateCameraPolygonData);
-        updateCameraPolygonData();
+    // Get current config
+    showLoadingModal();
+    backend.getConfig(function (data) {
+        warp_data = data.warp;
+        camera_data = data.camera;
+        signal_data = data.signal;
+        guide_data = data.guide;
+        refreshSVG();
+
+        // Get snapshot URL from param
+        snapshot_image.url = JSON.parse(getParameterByName('snapshot'));
+        container.css('background-image', 'url(' + snapshot_image.url +')');
+        container.css('background-size', '342px 614px');
+        // Draggable camera polygon
+        $('#camera.draggable').each(function () {
+            jqueryDraggablePolygon(this, updateCameraPolygonData);
+            updateCameraPolygonData();
+        });
+        hideLoadingModal();
     });
     // Bind set warp on submit
     if (container.data('warp')) {
@@ -224,20 +268,29 @@ function initConfig1() {
 
 function initConfig2() {
     // STEP 2
-    // Get warped image
-    if (container.data('warped')) {
+    // Get current config
+    showLoadingModal();
+    backend.getConfig(function (data) {
+        warp_data = data.warp;
+        camera_data = data.camera;
+        signal_data = data.signal;
+        guide_data = data.guide;
+        refreshSVG();
+
+        // Get warped image
         updateWarpData();
         backend.setWarp(warp_data.corners, function (data) {
             warped_image = data;
             container.find('image#camera')
-                     .attr('xlink:href', data.url); 
+                     .attr('xlink:href', data.url);
+            hideLoadingModal();
         });
-    }
+    });
     // Bind set config on submit
     if (container.data('config')) {
         $('form').submit(function (e) {
             e.preventDefault();
-            backend.saveConfig({
+            backend.setConfig({
                 warp: warp_data,
                 camera: camera_data,
                 signal: signal_data,
@@ -306,6 +359,19 @@ function initConfig2() {
     });
 }
 
+function loadingButton (button) {
+    $(button).html('<i class="fa fa-spinner"></i> Laden ...');
+}
+
+function showLoadingModal (text, abort_label) {
+    text = text || 'Aktuelle Konfiguration wird geladen, bitte warten.';
+    abort_label = abort_label || 'Abbrechen';
+    backend.createModal('loading', 'Laden', text, null, '', abort_label);
+}
+
+function hideLoadingModal () {
+    $('#loading').modal('hide');
+}
 
 $(document).ready(function () {
 

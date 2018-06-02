@@ -2,13 +2,16 @@
     $.kpcBackend = function( options ) {
         var settings = $.extend({
             // These are the defaults.
-            base_url: 'http://10.10.0.1:9080',
+            base_url: 'http://portalcam.config:9080',
+            socket_url: 'ws://portalcam.config:8080/',
             maintenance_url: '/maintenance/set',
             snapshot_url: '/snapshot/get',
             warp_url: '/warp/set',
-            config_save_url: '/config/set',
-            config_load_url: '/config/load',
-            config_reset_url: '/config/reset'
+            config_get_url: '/config/get',
+            config_set_url: '/config/set',
+            config_reset_url: '/config/reset',
+            begin_update_url: '/update/begin',
+            verify_update_url: '/update/verify',
         }, options);
 
         // Validate settings
@@ -17,8 +20,10 @@
             return;
         }
 
-        var createModal = function(id, title, text, callback) {
-            $('#' + id).remove();
+        var createModal = function(id, title, text, submit_callback, submit_label, abort_label) {
+            $('#' + id).modal('hide');
+            submit_label = submit_label || 'Ok';
+            abort_label = abort_label || 'Zurück';
             html = '<div id="' + id + '" class="modal fade" tabindex="-1" role="dialog">';
             html += '<div class="modal-dialog" role="document">';
             html += '<div class="modal-content">';
@@ -32,30 +37,30 @@
             html += '</div>';
             html += '<div class="modal-footer">';
             html += '<button type="button" class="btn btn-secondary"' +
-                ' data-dismiss="modal">Zurück</button>';
-            if (callback) {
-                html += '<button type="button" class="btn btn-primary">Ja</button>';
+                ' data-dismiss="modal">' + abort_label + '</button>';
+            if (submit_callback) {
+                html += '<button type="button" class="btn btn-primary">' + submit_label + '</button>';
             }
             html += '</div>';
             html += '</div><!-- /.modal-content -->';
             html += '</div><!-- /.modal-dialog -->';
             html += '</div><!-- /.modal -->';
             $(html).appendTo($("body"));
-            if (callback) {
+            if (submit_callback) {
                 $('#' + id + ' .btn-primary').click(function (e) {
                     e.preventDefault();
-                    callback();
+                    submit_callback();
                     return false;
                 });
             }
             $('#' + id).modal();
         };
 
-        var createErrorModal = function() {
+        var createErrorModal = function(error) {
             $('.modal').modal('hide');
-            createModal('error', 'Fehler',
-                'Leider konnte die gewünschte Aktion nicht durchgeführt werden. ' +
-                'Bitte kontaktieren Sie unseren Support.');
+            error = error || 'Leider konnte die gewünschte Aktion nicht durchgeführt werden. ' +
+                'Bitte kontaktieren Sie unseren Support.';
+            createModal('error', 'Fehler', error);
         };
 
         return {
@@ -96,9 +101,9 @@
                 });
             },
 
-            loadConfig: function (callback) {
+            getConfig: function (callback) {
                 $.ajax({
-                    url: settings.base_url + settings.config_load_url,
+                    url: settings.base_url + settings.config_get_url,
                     method: 'GET',
                     dataType: 'json',
                     success: callback,
@@ -108,9 +113,9 @@
                 });
             },
 
-            saveConfig: function (config, callback) {
+            setConfig: function (config, callback) {
                 $.ajax({
-                    url: settings.base_url + settings.config_save_url,
+                    url: settings.base_url + settings.config_set_url,
                     method: 'POST',
                     data: JSON.stringify(config),
                     success: callback,
@@ -121,16 +126,83 @@
 
             },
 
-            resetConfig: function (callback) {
+            resetConfig: function () {
                 $.ajax({
                     url: settings.base_url + settings.config_reset_url,
                     method: 'GET',
+                    dataType: 'json',
+                    success: function () {
+                        createModal('reset', 'Auf Werkseinstellungen zurückgesetzt',
+                            'Die Portalkamera wurde erfolgreich auf Werkseinstellungen ' +
+                            'zurückgesetzt.');
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        createErrorModal();
+                    }
+                });
+            },
+
+            beginUpdate: function () {
+                $.ajax({
+                    url: settings.base_url + settings.begin_update_url,
+                    method: 'POST',
+                    dataType: 'json',
+                    data: {
+                        timestamp: Math.round(new Date() / 1000)
+                    },
+                    success: function () {
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        createErrorModal();
+                    }
+                });
+            },
+
+            sendUpdateFile: function (file, callback) {
+                if ("WebSocket" in window) {
+                    ws = new WebSocket(settings.socket_url);
+                    ws.onopen = function () {
+                        ws.binaryType = "arraybuffer";
+                        var reader = new FileReader();
+                        var rawData = new ArrayBuffer();
+                        //reader.loadend = function() {
+                        //};
+                        reader.onload = function(e) {
+                            rawData = e.target.result;
+                            ws.send(rawData);
+                            callback();
+                        };
+                        reader.onerror = function () {
+                            createErrorModal();
+                        };
+                        reader.readAsArrayBuffer(file);
+                    };
+                    ws.onclose = function () {
+                        console.log("Connection is closed.");
+                    };
+                } else {
+                    backend.error("WebSocket wird von Ihrem Browser nicht unterstützt.");
+                }
+            },
+
+            verifyUpdate: function (callback) {
+                $.ajax({
+                    url: settings.base_url + settings.verify_update_url,
+                    method: 'POST',
                     dataType: 'json',
                     success: callback,
                     error: function (jqXHR, textStatus, errorThrown) {
                         createErrorModal();
                     }
                 });
+            },
+
+            error: function (error) {
+                createErrorModal(error);
+            },
+
+            createModal: function (id, title, text, submit_callback, submit_label, abort_label) {
+                createModal(id, title, text, submit_callback, submit_label, abort_label);
             }
         };
     };
