@@ -65,25 +65,27 @@ function updateCameraPolygonData() {
 }
 
 function updateCameraImageData() {
-    var container = $('image#camera');
-    var matrix = container.panzoom('getMatrix');
-    var zoom = parseFloat(matrix[0]);
+    var container = $('image#camera'),
+        matrix = container.panzoom('getMatrix'),
+        zoom = parseFloat(matrix[0]);
     camera_data.zoom = zoom;
     camera_data.translation = [
         Math.round((parseFloat(matrix[4]) + (zoom-1) * container.width()/2) * ratio),
         Math.round((parseFloat(matrix[5]) - (parseFloat(matrix[3]) < 0 ? container.height() * zoom : 0) + (zoom-1) * container.height()/2) * ratio)
     ];
+    camera_data.flip = parseInt(matrix[3]) < 0;
 }
 
 function updateSignalData() {
-    var matrix = $('#signal').panzoom('getMatrix'),
-        x = parseFloat($('#signal').attr('x')) + parseFloat(matrix[4]),
-        y = parseFloat($('#signal').attr('y')) + parseFloat(matrix[5]);
+    var signal = $('#signal'),
+        matrix = signal.panzoom('getMatrix'),
+        x = parseFloat(signal.attr('x')) + parseFloat(matrix[4]),
+        y = parseFloat(signal.attr('y')) + parseFloat(matrix[5]);
     signal_data.bounds = [
         Math.round(x * ratio),
         Math.round(y * ratio),
-        Math.round($('#signal').width() * ratio),
-        Math.round($('#signal').height() * ratio),
+        Math.round(signal.width() * ratio),
+        Math.round(signal.height() * ratio),
     ];
 }
 
@@ -136,20 +138,28 @@ function refreshSVG() {
             this.points[i].y = guide_data.position[i * 2 + 1] * ratio_inverse;
         }
         // Recreate handles
-        jqueryDraggablePolygon(this, updateGuideData());
+        jqueryDraggablePolygon(this, updateGuideData);
     });
 
     // Step 2: Pan traffic light
     if ($('#signal.pan').length) {
         var signal_tx = signal_data.bounds[0] * ratio_inverse,
             signal_ty = signal_data.bounds[1] * ratio_inverse;
-        $('#signal.pan').panzoom('pan', signal_tx, signal_ty);
+        $('#signal.pan').attr('x', signal_tx).attr('y', signal_ty);
     }
 
     // Step 2: Color picker for guide line
     if ($('#guide.colorpicker').length) {
-        $("#guide-colorpicker").spectrum('set', guide_data.color).change();
+        $('#guide-colorpicker').spectrum('set', guide_data.color);
+        updateGuideColorData();
     }
+
+    // Step 2: Flip
+    if ($('#camera-flip').length) {
+        var checkbox = $('#camera-flip');
+        checkbox.attr('checked', camera_data.flip && 'checked' || null).change();
+    }
+
 }
 
 function downloadURI(uri, name) {
@@ -237,7 +247,6 @@ function initStart() {
 function initConfig1() {
     // STEP 1
     // Get current config
-    showLoadingModal();
     backend.getConfig(function (data) {
         warp_data = data.warp;
         camera_data = data.camera;
@@ -254,7 +263,6 @@ function initConfig1() {
             jqueryDraggablePolygon(this, updateCameraPolygonData);
             updateCameraPolygonData();
         });
-        hideLoadingModal();
     });
     // Bind set warp on submit
     if (container.data('warp')) {
@@ -269,7 +277,6 @@ function initConfig1() {
 function initConfig2() {
     // STEP 2
     // Get current config
-    showLoadingModal();
     backend.getConfig(function (data) {
         warp_data = data.warp;
         camera_data = data.camera;
@@ -283,7 +290,6 @@ function initConfig2() {
             warped_image = data;
             container.find('image#camera')
                      .attr('xlink:href', data.url);
-            hideLoadingModal();
         });
     });
     // Bind set config on submit
@@ -308,7 +314,12 @@ function initConfig2() {
             $zoomIn: $('.panzoom-control .zoom-in'),
             $zoomOut: $('.panzoom-control .zoom-out'),
             $zoomRange: $('.panzoom-control .zoom-range'),
-            $reset: $('.panzoom-control .reset')
+            $reset: $('.panzoom-control .reset'),
+            minScale: 1,
+            maxScale: 5,
+            rangeStep: 0.05,
+            increment: 0.05,
+            exponential: false
         });
         $('#camera.panzoom').on('panzoomend', updateCameraImageData);
         updateCameraImageData();
@@ -342,20 +353,19 @@ function initConfig2() {
     // Flip snapshot
     $('#camera-flip').change(function () {
         camera_data.flip = $(this).is(':checked');
+
         var camera = $('image#camera'),
             matrix = camera.panzoom('getMatrix');
-        if ($(this).is(':checked')) {
-            matrix[0] = 1;
-            matrix[3] = -1;
-            matrix[4] = 0;
+        if (camera_data.flip) {
+            matrix[3] = parseInt(matrix[0]) * -1;
+            matrix[5] = camera.height();
             camera.panzoom('setMatrix', matrix);
-            camera.panzoom('pan', camera.width(), camera.height());
         } else {
-            matrix[0] = 1;
-            matrix[3] = 1;
-            camera.panzoom('setMatrix', matrix);
-            camera.panzoom('pan', 0, 0);
+            matrix[3] = parseInt(matrix[0]);
+            matrix[5] = 0;
         }
+        camera.panzoom('setMatrix', matrix);
+
     });
 }
 

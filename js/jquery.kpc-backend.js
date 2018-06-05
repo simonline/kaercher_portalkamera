@@ -2,7 +2,7 @@
     $.kpcBackend = function( options ) {
         var settings = $.extend({
             // These are the defaults.
-            base_url: 'http://portalcam.config:9080',
+            base_url: 'http://portalcam.config',
             socket_url: 'ws://portalcam.config:8080/',
             maintenance_url: '/maintenance/set',
             snapshot_url: '/snapshot/get',
@@ -129,7 +129,7 @@
             resetConfig: function () {
                 $.ajax({
                     url: settings.base_url + settings.config_reset_url,
-                    method: 'GET',
+                    method: 'POST',
                     dataType: 'json',
                     success: function () {
                         createModal('reset', 'Auf Werkseinstellungen zurückgesetzt',
