@@ -142,16 +142,14 @@
                 });
             },
 
-            beginUpdate: function () {
+            beginUpdate: function (callback) {
                 $.ajax({
                     url: settings.base_url + settings.begin_update_url,
                     method: 'POST',
-                    dataType: 'json',
-                    data: {
+                    data: JSON.stringify({
                         timestamp: Math.round(new Date() / 1000)
-                    },
-                    success: function () {
-                    },
+                    }),
+                    success: callback,
                     error: function (jqXHR, textStatus, errorThrown) {
                         createErrorModal();
                     }
@@ -189,7 +187,6 @@
                 $.ajax({
                     url: settings.base_url + settings.verify_update_url,
                     method: 'POST',
-                    dataType: 'json',
                     success: callback,
                     error: function (jqXHR, textStatus, errorThrown) {
                         createErrorModal();

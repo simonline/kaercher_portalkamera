@@ -64,6 +64,21 @@ function updateCameraPolygonData() {
     });
 }
 
+function fixFlipZoom() {
+    // jquery.panzoom.js doesn't set zoom correctly when flipped
+    var camera = $('image#camera'),
+        matrix = camera.panzoom('getMatrix'),
+        zoom = parseFloat(matrix[0]);
+    if (camera_data.flip) {
+        matrix[3] = zoom * -1;
+        matrix[5] = camera.height();
+    } else {
+        matrix[3] = zoom;
+        matrix[5] = 0;
+    }
+    camera.panzoom('setMatrix', matrix);
+}
+
 function updateCameraImageData() {
     var container = $('image#camera'),
         matrix = container.panzoom('getMatrix'),
@@ -328,7 +343,14 @@ function initConfig2() {
             increment: 0.05,
             exponential: false
         });
-        $('#camera.panzoom').on('panzoomend', updateCameraImageData);
+        $('#camera.panzoom').on('panzoompan', function () {
+            fixFlipZoom();
+            updateCameraImageData();
+        });
+        $('#camera.panzoom').on('panzoomzoom', function () {
+            fixFlipZoom();
+            updateCameraImageData();
+        });
         updateCameraImageData();
     }
     // Draggable guide polygon
@@ -343,7 +365,7 @@ function initConfig2() {
             disableZoom: true,
             $reset: $('.pan-control .reset')
         });
-        $('#signal.pan').on('panzoomend', updateSignalData);
+        $('#signal.pan').on('panzoompan', updateSignalData);
         updateSignalData();
     }
     // Color picker for guide line
@@ -362,13 +384,14 @@ function initConfig2() {
         camera_data.flip = $(this).is(':checked');
 
         var camera = $('image#camera'),
-            matrix = camera.panzoom('getMatrix');
+            matrix = camera.panzoom('getMatrix'),
+            zoom = parseFloat(matrix[0]);
         if (camera_data.flip) {
-            matrix[3] = parseInt(matrix[0]) * -1;
+            matrix[3] = zoom * -1;
             matrix[5] = camera.height();
             camera.panzoom('setMatrix', matrix);
         } else {
-            matrix[3] = parseInt(matrix[0]);
+            matrix[3] = zoom;
             matrix[5] = 0;
         }
         camera.panzoom('setMatrix', matrix);
