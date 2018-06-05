@@ -344,7 +344,6 @@ function initConfig2() {
             exponential: false
         });
         $('#camera.panzoom').on('panzoompan', function () {
-            fixFlipZoom();
             updateCameraImageData();
         });
         $('#camera.panzoom').on('panzoomzoom', function () {
