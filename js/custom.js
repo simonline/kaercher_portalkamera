@@ -156,8 +156,15 @@ function refreshSVG() {
 
     // Step 2: Flip
     if ($('#camera-flip').length) {
-        var checkbox = $('#camera-flip');
-        checkbox.attr('checked', camera_data.flip && 'checked' || null).change();
+        var checkbox = $('#camera-flip'),
+            btn = checkbox.parent();
+        if (camera_data.flip) {
+            checkbox.attr('checked', 'checked').change();
+            btn.addClass('active');
+        } else {
+            checkbox.attr('checked', null).change();
+            btn.removeClass('active');
+        }
     }
 
 }
@@ -234,7 +241,7 @@ function initStart() {
                 var config = JSON.parse(re.target.result);
                 backend.setConfig(config, function (data) {
                     // Go to next step
-                    location = $('form').attr('action');
+                    $('form#start').submit();
                 });
             };
             reader.onerror = function (ee) {
