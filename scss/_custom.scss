@@ -22,6 +22,10 @@
 h1, h2, h3, h4, h5, h6 {
   font-weight: bold;
 }
+h6 {
+  padding:10px;
+  background-color:#EEEEEE;
+}
 a,
 input[type=submit],
 button {
@@ -29,7 +33,7 @@ button {
   text-transform: uppercase;
 }
 .btn {
-  border-radius: 0;
+  border-radius: 20px;
 }
 
 
@@ -62,6 +66,10 @@ polygon#guide {
 }
 
 /* CONTROLS */
+.btn-group-toggle {
+  display:inline;
+}
+
 .btn-cross {
   .btn-group-vertical:first-child .btn {
     border-top-right-radius: 0;

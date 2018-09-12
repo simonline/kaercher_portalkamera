@@ -57,6 +57,23 @@ function updateWarpData() {
     warp_data.corners = JSON.parse(getParameterByName('warp'));
 }
 
+function resetCameraPolygon() {
+
+    var corners = [340,760,740,760,740,1160,340,1160];
+
+     $('#camera.draggable').each(function () {
+        // Update points
+        for (var i = 0; i < 4; i++) {
+            this.points[i].x = corners[i * 2] * ratio_inverse;
+            this.points[i].y = corners[i * 2 + 1] * ratio_inverse;
+        }
+        // Recreate handles
+        jqueryDraggablePolygon(this, updateCameraPolygonData);
+    });
+
+     warp_data.corners = corners;
+}
+
 function updateCameraPolygonData() {
     var points = container.find('polygon#camera').attr('points').split(/[, ]/);
     warp_data.corners = points.map(function (i) {
@@ -71,10 +88,10 @@ function fixFlipZoom() {
         zoom = parseFloat(matrix[0]);
     if (camera_data.flip) {
         matrix[3] = zoom * -1;
-        matrix[5] = camera.height();
+        // matrix[5] = camera.height();
     } else {
         matrix[3] = zoom;
-        matrix[5] = 0;
+        // matrix[5] = 0;
     }
     camera.panzoom('setMatrix', matrix);
 }
@@ -140,9 +157,22 @@ function refreshSVG() {
     // Step 2: Pan/Zoom camera
     if ($('#camera.panzoom').length) {
         var camera_tx = camera_data.translation[0],
-            camera_ty = camera_data.translation[1];
-        $('#camera.panzoom').panzoom('pan', camera_tx, camera_ty);
-        $('.zoom-range').val(camera_data.zoom);
+            camera_ty = camera_data.translation[1],
+            zoom = camera_data.zoom;
+            flip = camera_data.flip;
+        if (zoom > 1.0) {
+            var tx = camera_tx/ratio - (zoom-1)*$('image#camera').width()/2,
+                ty = camera_ty/ratio - (zoom-1)*$('image#camera').height()/2 + (flip ? $('image#camera').height()*zoom : 0),
+                matrix = $('#camera.panzoom').panzoom('getMatrix');
+            matrix[0] = zoom;
+            matrix[3] = flip ? -zoom : zoom;
+            matrix[4] = tx;
+            matrix[5] = ty;
+            $('#camera.panzoom').panzoom('setMatrix',matrix);
+        } else {
+            $('#camera.panzoom').panzoom('pan', camera_tx, camera_ty);    
+        }
+        $('.zoom-range').val(zoom);
     }
 
     // Step 2: Draggable guide polygon
@@ -174,10 +204,10 @@ function refreshSVG() {
         var checkbox = $('#camera-flip'),
             btn = checkbox.parent();
         if (camera_data.flip) {
-            checkbox.attr('checked', 'checked').change();
+            checkbox.attr('checked', 'checked');
             btn.addClass('active');
         } else {
-            checkbox.attr('checked', null).change();
+            checkbox.attr('checked', null);
             btn.removeClass('active');
         }
     }
@@ -207,6 +237,11 @@ function initAll() {
         e.preventDefault();
         backend.resetConfig();
     });
+    // Bind back
+    $('a.go-back').click(function (e) {
+        e.preventDefault();
+        history.go(-1);
+    });
 }
 
 function initStart() {
@@ -214,7 +249,8 @@ function initStart() {
     // Bind maintenance mode and snapshot on submit
     $('form#start').submit(function (e) {
         e.preventDefault();
-        loadingButton($('button[type=submit]'));
+        showLoadingModal('Wartungsmodus wird gestartet...');
+        // loadingButton($('button[type=submit]'));
         backend.setMaintenanceMode(function (mdata) {
             backend.takeSnapshot(function (sdata) {
                 // Go to next step, setting image parameter
@@ -249,14 +285,16 @@ function initStart() {
     $('#upload-config').change(function (e) {
         var file = this.files[0];
         if (file) {
-            loadingButton($('a.load-config'));
+            // loadingButton($('a.load-config'));
+            showLoadingModal('Konfiguration wird geladen...');
             var reader = new FileReader();
             reader.readAsText(file, "UTF-8");
             reader.onload = function (re) {
                 var config = JSON.parse(re.target.result);
                 backend.setConfig(config, function (data) {
+                    showLoadingModal('Konfiguration erfolgreich geladen. Das System wird mit der neuen Konfiguration gestartet.', 'OK');
                     // Go to next step
-                    $('form#start').submit();
+                    // $('form#start').submit();
                 });
             };
             reader.onerror = function (ee) {
@@ -285,6 +323,11 @@ function initConfig1() {
             jqueryDraggablePolygon(this, updateCameraPolygonData);
             updateCameraPolygonData();
         });
+    });
+     // Bind Reset Polygon
+    $('a.reset-polygon').click(function (e) {
+        e.preventDefault();
+        resetCameraPolygon();
     });
     // Bind set warp on submit
     if (container.data('warp')) {
@@ -318,6 +361,7 @@ function initConfig2() {
     if (container.data('config')) {
         $('form').submit(function (e) {
             e.preventDefault();
+            showLoadingModal('Konfiguration wird übertragen...');
             backend.setConfig({
                 warp: warp_data,
                 camera: camera_data,
@@ -387,14 +431,13 @@ function initConfig2() {
             zoom = parseFloat(matrix[0]);
         if (camera_data.flip) {
             matrix[3] = zoom * -1;
-            matrix[5] = camera.height();
+            matrix[5] = parseFloat(matrix[5]) + camera.height()*zoom;
             camera.panzoom('setMatrix', matrix);
         } else {
             matrix[3] = zoom;
-            matrix[5] = 0;
+            matrix[5] = parseFloat(matrix[5]) - camera.height()*zoom;
         }
         camera.panzoom('setMatrix', matrix);
-
     });
 }
 
@@ -404,8 +447,7 @@ function loadingButton (button) {
 
 function showLoadingModal (text, abort_label) {
     text = text || 'Aktuelle Konfiguration wird geladen, bitte warten.';
-    abort_label = abort_label || 'Abbrechen';
-    backend.createModal('loading', 'Laden', text, null, '', abort_label);
+    backend.createModal('loading', 'Einen Moment Geduld', text, null, '', abort_label);    
 }
 
 function hideLoadingModal () {

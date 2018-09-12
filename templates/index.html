@@ -1,6 +1,11 @@
 <!doctype html>
 <html lang="en">
-  @@include('includes/head.html')
+    <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="css/app.min.css">
+    <title>Kärcher Portalkamera: Konfiguration</title>
+  </head>
   <body>
     <nav class="navbar navbar-expand-lg bg-light mb-5">
       <div class="container">
@@ -34,24 +39,25 @@
       <form action="configure-1.html" id="start" enctype="multipart/form-data">
         <div class="row">
           <div class="col-sm-12">
-            <h3>Konfiguration starten</h3>
+            <h3>Systemkonfiguration</h3>
             <p>
-              Klicken Sie auf „Konfiguration starten“ um die Konfiguration zu starten.<br>
-              Dieser Vorgang kann mehrere Minuten in Anspruch nehmen, da die Kamera in
-              Wartungsmodus versetzt wird.
+              Stellen Sie zunächst sicher, dass die Kamera den Einfahrtsbereich der Waschstraße vollständig abdeckt. Justieren Sie ggf. die Position der Kamera im Portalrahmen, bis das Kamerabild optimal ausgerichtet ist.<br><br>
+              Klicken Sie auf „Neue Konfiguration erstellen“ um das Kamerabild und die Grafikanzeigen zu konfigurieren. Beim Start der Konfiguration wird das System in den Wartungsmodus versetzt, was bis zu 20 Sekunden in Anspruch nehmen kann. Anschließend werden Sie durch die einzelnen Konfigurationsschritte geführt.<br><br>
+              Alternativ kann eine zuvor gespeicherte Konfigurationsdatei geladen und an das System übertragen werden. In diesem Fall startet das System automatisch neu und übernimmt die geladene Konfiguration.
             </p>
-            <input id="upload-config" class="d-none" type="file">
-            <a class="btn btn-primary load-config">
-              <i class="fa fa-upload"></i> Konfiguration aus Datei laden
-            </a>
+            <br>
             <button type="submit"
                     class="btn btn-primary">
-              Konfiguration starten
+              <i class="fa fa-plus"></i>&nbsp; Neue Konfiguration erstellen
             </button>
+            <input id="upload-config" class="d-none" type="file">
+            <a class="btn btn-primary load-config">
+              <i class="fa fa-file"></i>&nbsp; Bestehende Konfiguration aus Datei laden
+            </a>
           </div>
         </div>
       </form>
     </div>
-    @@include('includes/footer.html')
+    <script src="js/app.min.js"></script>
   </body>
 </html>

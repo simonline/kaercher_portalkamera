@@ -21,9 +21,11 @@
         }
 
         var createModal = function(id, title, text, submit_callback, submit_label, abort_label) {
-            $('#' + id).modal('hide');
+            // $('#' + id).modal('hide');
+            $('#' + id).remove(); // Remove previous modal
+            $('.modal-backdrop').remove();
             submit_label = submit_label || 'Ok';
-            abort_label = abort_label || 'Zurück';
+            // abort_label = abort_label || 'Zurück';
             html = '<div id="' + id + '" class="modal fade" tabindex="-1" role="dialog">';
             html += '<div class="modal-dialog" role="document">';
             html += '<div class="modal-content">';
@@ -36,8 +38,10 @@
             html += '<p>' + text + '</p>';
             html += '</div>';
             html += '<div class="modal-footer">';
-            html += '<button type="button" class="btn btn-secondary"' +
-                ' data-dismiss="modal">' + abort_label + '</button>';
+            if (abort_label) {
+                html += '<button type="button" class="btn btn-secondary"' +
+                    ' data-dismiss="modal">' + abort_label + '</button>';
+            }
             if (submit_callback) {
                 html += '<button type="button" class="btn btn-primary">' + submit_label + '</button>';
             }

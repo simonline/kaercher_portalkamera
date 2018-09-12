@@ -22,18 +22,23 @@
                  height="622">
               <polygon id="camera"
                        class="draggable"
-                       points="50,50 300,50 300,570 50,570"></polygon>
+                       points="340,760,740,760,740,1160,340,1160"></polygon>
             </svg>
           </div>
           <div class="col-sm-8">
-            <h3>Videobild-Entzerrung</h3>
+            <h3>Kamerabild Entzerrung</h3>
             <p>
-              Ziehen Sie die Ecken der grünen Markierung auf die Ecken der
-              Schachbrett-Vorlage im Bild.
+              Aufgrund des schrägen Winkels der Kamera, werden geometrische Formen im Kamerabild verzerrt dargestellt.<br><br>
+              Das System kann diese Verzerrung rechnerisch kompensieren, indem das Kamerabild entsprechend entzerrt wird. Um diese Entzerrung zu kalibrieren, führe Sie die folgenden Schritte durch:<br>
+              <ol type="1">
+              <li style="margin-bottom:10px">Platzieren Sie eine quadratische Kalibriervorlage (Kantenlänge ca. 1 m) im Bereich des Kamerabilds, z.B. auf dem Boden. Starten Sie die Konfiguration ggf. neu damit die Vorlage im Standbild der Kamera erscheint.</li>
+              <li style="margin-bottom:10px">Verschieben Sie die Ecken der transluzenten gelben Fläche bis die Ecken exakt auf den Ecken der Vorlage im Kamerabild liegen. Die Entzerrungsberechnung nähert sie so markierte Fläche wieder einem Quadrat an und kompensiert so die Kameraverzerrung.</li>
+              <li style="margin-bottom:10px">Starten Sie nun die Entzerrungsberechnung über die Schaltfläche.</li>
+              <li style="margin-bottom:10px">Durch die Entzerrung wird der rechteckige Bildausschnitt des Kamerabilds ebenfalls verzerrt und nicht mehr in voller Größe nutzbar. Im nächsten Konfigurationsschritt kann der Bildausschnitt entsprechend angepasst werden.</li>
+              </ol>
             </p>
-            <input type="submit"
-                   class="btn btn-primary"
-                   value="Weiter zur Ausrichtung" />
+            <a class="btn btn-primary reset-polygon">Entzerrung zurücksetzen</a>
+            <input type="submit" class="btn btn-primary" value="Entzerrung berechnen" />
           </div>
         </div>
       </form>
