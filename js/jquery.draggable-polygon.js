@@ -8,22 +8,21 @@ function jqueryDraggablePolygon(polygon, callback) {
 
         var handle = document.createElement("div");
         handle.className = "handle";
-        document.body.appendChild(handle);
+        $("#preview-container").append(handle);
 
-        var base = svgRoot.position();
         // center handles over polygon
-        var cs = window.getComputedStyle(handle, null);
-        base.left -= (parseInt(cs.width) + parseInt(cs.borderLeftWidth) + parseInt(cs.borderRightWidth))/2;
-        base.top -= (parseInt(cs.height) + parseInt(cs.borderTopWidth) + parseInt(cs.borderBottomWidth))/2;
+        var cs = window.getComputedStyle(handle, null),
+            dx = 4; //(parseInt(cs.width) + parseInt(cs.borderLeftWidth) + parseInt(cs.borderRightWidth))/2, ?? 
+            dy = (parseInt(cs.height) + parseInt(cs.borderTopWidth) + parseInt(cs.borderBottomWidth))/2;
 
-        handle.style.left = base.left + point.x + "px";
-        handle.style.top = base.top + point.y + "px";
+        handle.style.left = point.x - dx + "px";
+        handle.style.top = point.y - dy  + "px";
 
         $(handle).draggable({
             drag: function (event) {
                 setTimeout(function () { // jQuery apparently calls this *before* setting position, so defer
-                    point.x = parseInt(handle.style.left) - base.left;
-                    point.y = parseInt(handle.style.top) - base.top;
+                    point.x = parseInt(handle.style.left) + dx;
+                    point.y = parseInt(handle.style.top) + dy;
                     callback(point);
                 },0);
             }
