@@ -75,7 +75,7 @@ function resetCameraPolygon() {
 }
 
 function updateCameraPolygonData() {
-    var points = container.find('polygon#camera').attr('points').split(/[, ]/);
+    var points = container.find('polygon#camera').attr('points').split(/[\s,]+/);
     warp_data.corners = points.map(function (i) {
         return Math.round(parseFloat(i) * ratio);
     });
@@ -100,10 +100,12 @@ function updateCameraImageData() {
     var container = $('image#camera'),
         matrix = container.panzoom('getMatrix'),
         zoom = parseFloat(matrix[0]);
+        w = parseFloat(container.attr('width'));
+        h = parseFloat(container.attr('height'));
     camera_data.zoom = zoom;
     camera_data.translation = [
-        Math.round((parseFloat(matrix[4]) + (zoom-1) * container.width()/2) * ratio),
-        Math.round((parseFloat(matrix[5]) - (parseFloat(matrix[3]) < 0 ? container.height() * zoom : 0) + (zoom-1) * container.height()/2) * ratio)
+        Math.round((parseFloat(matrix[4]) + (zoom-1) * w/2) * ratio),
+        Math.round((parseFloat(matrix[5]) - (parseFloat(matrix[3]) < 0 ? h * zoom : 0) + (zoom - 1) * h/2) * ratio)
     ];
     camera_data.flip = parseInt(matrix[3]) < 0;
 }
@@ -113,16 +115,19 @@ function updateSignalData() {
         matrix = signal.panzoom('getMatrix'),
         x = parseFloat(signal.attr('x')) + parseFloat(matrix[4]),
         y = parseFloat(signal.attr('y')) + parseFloat(matrix[5]);
+        w = parseFloat(signal.attr('width'));
+        h = parseFloat(signal.attr('height'));
     signal_data.bounds = [
         Math.round(x * ratio),
         Math.round(y * ratio),
-        Math.round(signal.width() * ratio),
-        Math.round(signal.height() * ratio),
+        Math.round(w * ratio),
+        Math.round(h * ratio),
     ];
 }
 
 function updateGuideData() {
-    var points = container.find('polygon#guide').attr('points').split(' ');
+    
+    var points = container.find('polygon#guide').attr('points').split(/[\s,]+/);
     guide_data.position = points.map(function (i) {
         return Math.round(parseFloat(i) * ratio);
     });
@@ -160,9 +165,11 @@ function refreshSVG() {
             camera_ty = camera_data.translation[1],
             zoom = camera_data.zoom;
             flip = camera_data.flip;
-        if (zoom > 1.0) {
-            var tx = camera_tx/ratio - (zoom-1)*$('image#camera').width()/2,
-                ty = camera_ty/ratio - (zoom-1)*$('image#camera').height()/2 + (flip ? $('image#camera').height()*zoom : 0),
+        if (zoom >= 1.0) {
+            var w = parseFloat($('image#camera').attr('width'));
+                h = parseFloat($('image#camera').attr('height'));
+                tx = camera_tx/ratio - (zoom-1) * w/2,
+                ty = camera_ty/ratio - (zoom-1) * h/2 + (flip ? h*zoom : 0),
                 matrix = $('#camera.panzoom').panzoom('getMatrix');
             matrix[0] = zoom;
             matrix[3] = flip ? -zoom : zoom;
@@ -429,13 +436,14 @@ function initConfig2() {
         var camera = $('image#camera'),
             matrix = camera.panzoom('getMatrix'),
             zoom = parseFloat(matrix[0]);
+            h = parseFloat(camera.attr('height'));
         if (camera_data.flip) {
             matrix[3] = zoom * -1;
-            matrix[5] = parseFloat(matrix[5]) + camera.height()*zoom;
+            matrix[5] = parseFloat(matrix[5]) + h*zoom;
             camera.panzoom('setMatrix', matrix);
         } else {
             matrix[3] = zoom;
-            matrix[5] = parseFloat(matrix[5]) - camera.height()*zoom;
+            matrix[5] = parseFloat(matrix[5]) - h*zoom;
         }
         camera.panzoom('setMatrix', matrix);
     });
