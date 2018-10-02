@@ -134,11 +134,12 @@
                 $.ajax({
                     url: settings.base_url + settings.config_reset_url,
                     method: 'POST',
-                    dataType: 'json',
                     success: function () {
-                        createModal('reset', 'Auf Werkseinstellungen zurückgesetzt',
-                            'Die Portalkamera wurde erfolgreich auf Werkseinstellungen ' +
-                            'zurückgesetzt.');
+                        showLoadingModal('Das System wurde erfolgreich auf Werkseinstellungen ' +
+                            'zurückgesetzt und startet neu.', 'Ok');
+                        // createModal('reset', 'Auf Werkseinstellungen zurückgesetzt',
+                        //     'Das System wurde erfolgreich auf Werkseinstellungen ' +
+                        //     'zurückgesetzt und startet neu.');
                     },
                     error: function (jqXHR, textStatus, errorThrown) {
                         createErrorModal();

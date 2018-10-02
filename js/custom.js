@@ -242,6 +242,7 @@ function initAll() {
     // Bind reset
     $('a.reset-config').click(function (e) {
         e.preventDefault();
+        showLoadingModal('System wird auf Werkseinstellungen zurückgesetzt...');
         backend.resetConfig();
     });
     // Bind back
