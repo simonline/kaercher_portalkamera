@@ -236,7 +236,7 @@ function initAll() {
     $('a.save-config').click(function (e) {
         e.preventDefault();
         backend.getConfig(function (data) {
-            downloadURI('data:application/json,' + JSON.stringify(data), 'config.json');
+            downloadURI('data:application/json,' + JSON.stringify(data), 'Portalkamera_Konfiguration.json');
         });
     });
     // Bind reset
