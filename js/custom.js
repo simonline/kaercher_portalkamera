@@ -194,18 +194,18 @@ function refreshSVG() {
         jqueryDraggablePolygon(this, updateGuideData);
     });
 
-    // Step 2: Pan traffic light
-    if ($('#signal.pan').length) {
-        var signal_tx = signal_data.bounds[0] * ratio_inverse,
-            signal_ty = signal_data.bounds[1] * ratio_inverse;
-        $('#signal.pan').attr('x', signal_tx).attr('y', signal_ty);
-    }
+    // // Step 2: Pan traffic light
+    // if ($('#signal.pan').length) {
+    //     var signal_tx = signal_data.bounds[0] * ratio_inverse,
+    //         signal_ty = signal_data.bounds[1] * ratio_inverse;
+    //     $('#signal.pan').attr('x', signal_tx).attr('y', signal_ty);
+    // }
 
-    // Step 2: Color picker for guide line
-    if ($('#guide.colorpicker').length) {
-        $('#guide-colorpicker').spectrum('set', guide_data.color);
-        updateGuideColorData();
-    }
+    // // Step 2: Color picker for guide line
+    // if ($('#guide.colorpicker').length) {
+    //     $('#guide-colorpicker').spectrum('set', guide_data.color);
+    //     updateGuideColorData();
+    // }
 
     // Step 2: Flip
     if ($('#camera-flip').length) {
@@ -418,27 +418,27 @@ function initConfig2() {
         jqueryDraggablePolygon(this, updateGuideData);
         updateGuideData();
     });
-    // Pan traffic light
-    if ($('#signal.pan').length) {
-        initPanZoom('#signal.pan', '.pan', {
-            eventNamespace: '.pan',
-            disableZoom: true,
-            $reset: $('.pan-control .reset')
-        });
-        $('#signal.pan').on('panzoompan', updateSignalData);
-        updateSignalData();
-    }
-    // Color picker for guide line
-    if ($('#guide.colorpicker').length) {
-        $("#guide-colorpicker").spectrum({
-            color: "#ffed00",
-            showButtons: false,
-            preferredFormat: "hex",
-            move: updateGuideColorData,
-            change: updateGuideColorData
-        });
-        updateGuideColorData();
-    }
+    // // Pan traffic light
+    // if ($('#signal.pan').length) {
+    //     initPanZoom('#signal.pan', '.pan', {
+    //         eventNamespace: '.pan',
+    //         disableZoom: true,
+    //         $reset: $('.pan-control .reset')
+    //     });
+    //     $('#signal.pan').on('panzoompan', updateSignalData);
+    //     updateSignalData();
+    // }
+    // // Color picker for guide line
+    // if ($('#guide.colorpicker').length) {
+    //     $("#guide-colorpicker").spectrum({
+    //         color: "#ffed00",
+    //         showButtons: false,
+    //         preferredFormat: "hex",
+    //         move: updateGuideColorData,
+    //         change: updateGuideColorData
+    //     });
+    //     updateGuideColorData();
+    // }
     // Flip snapshot
     $('#camera-flip').change(function () {
         camera_data.flip = $(this).is(':checked');
@@ -448,12 +448,16 @@ function initConfig2() {
             zoom = parseFloat(matrix[0]);
             h = parseFloat(camera.attr('height'));
         if (camera_data.flip) {
-            matrix[3] = zoom * -1;
-            matrix[5] = parseFloat(matrix[5]) + h*zoom;
+            if (matrix[3] < 0) {
+                matrix[5] = parseFloat(matrix[5]) + h*zoom;
+            }
+            matrix[3] = zoom * -1;            
             camera.panzoom('setMatrix', matrix);
         } else {
-            matrix[3] = zoom;
-            matrix[5] = parseFloat(matrix[5]) - h*zoom;
+            if (matrix[3] > 0) {
+                matrix[5] = parseFloat(matrix[5]) - h*zoom;
+            }
+            matrix[3] = zoom;            
         }
         camera.panzoom('setMatrix', matrix);
     });
