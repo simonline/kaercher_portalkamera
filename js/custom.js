@@ -24,7 +24,8 @@ var container,
     guide_data = {
         color: '', // hex
         position: [] // [x0,y0,x1,y1]
-    };
+    },
+    lang_data = "de";
 
 function getParameterByName(name, url) {
     if (!url) url = window.location.href;
@@ -355,7 +356,11 @@ function initConfig2() {
         camera_data = data.camera;
         signal_data = data.signal;
         guide_data = data.guide;
+        lang_data = data.language;
         refreshSVG();
+
+        // Set Language
+        $("select.language").val(lang_data);
 
         // Get warped image
         updateWarpData();
@@ -370,11 +375,15 @@ function initConfig2() {
         $('form').submit(function (e) {
             e.preventDefault();
             showLoadingModal('Konfiguration wird übertragen...');
+
+            lang_data = $("select.language").val();
+
             backend.setConfig({
                 warp: warp_data,
                 camera: camera_data,
                 signal: signal_data,
-                guide: guide_data
+                guide: guide_data,
+                language: lang_data
             }, function (data) {
                 // Go to next step
                 location = $('form').attr('action');
