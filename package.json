@@ -13,7 +13,7 @@
     "grunt-contrib-uglify": "^3.3.0",
     "grunt-contrib-watch": "^1.0.1",
     "grunt-include-replace": "^5.0.0",
-    "jquery": "^1.9.1",
+    "jquery": "^3.5.0",
     "jquery-ui": "^1.12.1",
     "jquery.panzoom": "^3.2.2",
     "popper.js": "^1.14.3",
